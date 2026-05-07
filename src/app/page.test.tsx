@@ -1,10 +1,10 @@
-import Home from "@/app/page";
+import TodoApp from "@/components/todo-app";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const storageKey = "todo-gstack-items";
 
-describe("Home page", () => {
+describe("TodoApp page", () => {
   beforeEach(() => {
     window.localStorage.clear();
     window.history.replaceState({}, "", "/");
@@ -12,7 +12,7 @@ describe("Home page", () => {
   });
 
   it("adds, toggles, and deletes todo items", () => {
-    render(<Home />);
+    render(<TodoApp />);
 
     fireEvent.change(screen.getByLabelText("Todo input"), {
       target: { value: "Ship feature" },
@@ -36,7 +36,7 @@ describe("Home page", () => {
     );
     window.history.replaceState({}, "", "/?filter=completed");
 
-    render(<Home />);
+    render(<TodoApp />);
 
     expect(screen.getByText("Done")).toBeVisible();
     expect(screen.queryByText("Open")).not.toBeInTheDocument();
