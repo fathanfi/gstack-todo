@@ -635,3 +635,134 @@ ____
 Runtime is Node/Next with no test framework configured, so I’m auto-bootstrapping the recommended setup (vitest + Testing Library) and will verify it before continuing ship gates.
 ____
 I’m implementing the MVP now in a clean, migration-friendly shape: TodoForm, TodoList, TodoItem, localStorage persistence, responsive layout, and empty state, then I’ll run lint/tests and continue /ship.
+
+___
+
+4. Step 4 is to use review
+
+___
+/review
+
+Review this Todo app.
+
+Focus:
+- React best practices
+- Next.js App Router patterns
+- TypeScript quality
+- localStorage handling
+- unnecessary rerenders
+- accessibility
+- mobile responsiveness
+
+Suggest improvements with code examples.
+____
+
+After 1 minutes, here is the result:
+
+____
+Scope Check
+Scope Check: CLEAN
+Intent: Build a Todo MVP (App Router + TS + Tailwind + localStorage + responsive + empty state, no external state lib).
+Delivered: Exactly that, plus useful test coverage and Vitest setup.
+
+Findings (ordered by severity)
+[P1] (confidence: 9/10) src/app/page.tsx — potential hydration mismatch from reading window/localStorage in useState initializers.
+Server render starts with filter="all" + todos=[], but client first render can immediately use query/localStorage values, producing mismatched initial markup.
+
+[P2] (confidence: 8/10) src/app/page.tsx — filter state is URL-written, but not URL-subscribed (popstate), so back/forward can desync UI.
+App updates query string, but if user navigates history, UI filter can stay stale.
+
+[P2] (confidence: 8/10) src/components/todo-item.tsx + src/app/page.tsx — avoidable rerenders for list items.
+Handlers and each TodoItem rerender on every parent render; this grows expensive with larger lists.
+
+[P3] (confidence: 8/10) src/app/page.tsx — filter controls need better a11y semantics.
+They act as toggles but don’t expose pressed/selected state to assistive tech.
+
+Suggested Improvements (with code)
+1) Fix hydration-safe initialization (React + App Router best practice)
+const [hydrated, setHydrated] = useState(false);
+const [filter, setFilter] = useState<TodoFilter>("all");
+const [todos, setTodos] = useState<Todo[]>([]);
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const incoming = params.get("filter");
+  if (incoming === "all" || incoming === "active" || incoming === "completed") {
+    setFilter(incoming);
+  }
+  setTodos(loadTodos());
+  setHydrated(true);
+}, []);
+if (!hydrated) return <TodoListSkeleton />;
+Why: keeps server/client first paint consistent, prevents hydration warnings.
+
+2) Keep URL and UI in sync (history navigation)
+useEffect(() => {
+  const onPopState = () => {
+    const incoming = new URLSearchParams(window.location.search).get("filter");
+    setFilter(
+      incoming === "active" || incoming === "completed" ? incoming : "all"
+    );
+  };
+  window.addEventListener("popstate", onPopState);
+  return () => window.removeEventListener("popstate", onPopState);
+}, []);
+3) Reduce unnecessary rerenders
+// todo-item.tsx
+import { memo } from "react";
+export default memo(TodoItem);
+// page.tsx
+const handleToggle = useCallback((id: string) => {
+  setTodos((current) =>
+    current.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+  );
+}, []);
+const handleDelete = useCallback((id: string) => {
+  setTodos((current) => current.filter((t) => t.id !== id));
+}, []);
+This is a good fit since your item props are stable primitives/objects keyed by id.
+
+4) Accessibility polish for filter controls
+<div role="tablist" aria-label="Todo filter" className="mb-4 flex gap-2">
+  {FILTERS.map((option) => (
+    <button
+      key={option}
+      role="tab"
+      aria-selected={option === filter}
+      aria-pressed={option === filter}
+      // ...
+    >
+      {option}
+    </button>
+  ))}
+</div>
+Quick quality summary by your focus areas
+React best practices: good component split; improve hydration + memoization.
+Next.js App Router: structure is good for MVP; hydration-safe client init is the main fix.
+TypeScript quality: solid and strict enough; storage guards are good.
+localStorage handling: good defensive parse/write; add hydration-safe load path.
+unnecessary rerenders: moderate opportunity with memo + useCallback.
+accessibility: generally good labels; filter state semantics can improve.
+mobile responsiveness: looks good and mobile-first.
+If you want, I can apply these changes directly as a small follow-up commit.
+
+___
+
+5. Step 5, is to use QA:
+
+___
+/qa
+
+Test the Todo app manually.
+
+Scenarios:
+- Add todo
+- Delete todo
+- Toggle complete
+- Refresh persistence
+- Empty input
+- Long todo text
+- Mobile layout
+
+Report bugs and fixes.
+
+/
