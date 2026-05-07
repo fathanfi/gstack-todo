@@ -29,7 +29,6 @@ export function setStoredTheme(theme: ThemePreference): void {
 export function applyTheme(theme: ThemePreference): void {
   const resolved = theme === "system" ? getSystemTheme() : theme;
   document.documentElement.classList.toggle("dark", resolved === "dark");
-  document.documentElement.dataset.theme = theme;
 }
 
 export function initTheme(): void {

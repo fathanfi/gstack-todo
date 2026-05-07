@@ -10,11 +10,9 @@ describe("theme", () => {
 
   it("applies dark class and data-theme", () => {
     document.documentElement.classList.remove("dark");
-    delete (document.documentElement as HTMLElement).dataset.theme;
 
     applyTheme("dark");
     expect(document.documentElement.classList.contains("dark")).toBe(true);
-    expect(document.documentElement.dataset.theme).toBe("dark");
   });
 });
 

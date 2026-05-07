@@ -6,7 +6,6 @@ describe("ThemeToggle", () => {
   beforeEach(() => {
     window.localStorage.clear();
     document.documentElement.classList.remove("dark");
-    delete (document.documentElement as HTMLElement).dataset.theme;
   });
 
   it("cycles theme and persists to localStorage", () => {
