@@ -601,3 +601,37 @@ Requirements:
 - No external state libraries
 
 Implement step by step and explain major changes.
+
+___
+
+Running /ship now against your current branch and the referenced scope. I’ll execute pre-flight first, and if there’s a hard blocker (like being on base branch), I’ll report it with the exact next action.
+
+/ship is blocked by a hard pre-flight rule:
+
+Current branch: main
+Detected base branch: main
+Ship workflow aborts on the base branch by design.
+
+Next step
+Create/switch to a feature branch, then rerun /ship:
+
+git switch -c feat/todo-mvp
+Then run:
+
+/ship @GSTACK-FLOW.md
+I can continue immediately once you’re on a feature branch.
+
+____
+
+Now need to run this command
+____
+Switching to feat/todo-mvp and immediately re-running /ship from pre-flight through the required checks. I’ll only stop if the workflow hits one of its hard gates.
+_____
+
+~/.claude/skills/gstack/bin/gstack-review-read
+____
+Pre-flight is clean on feat/todo-mvp, but there are currently no branch commits or file diffs versus main. I’ll continue the automated ship checks (merge, test bootstrap, tests, completion audit) and stop only if a hard gate is hit.
+____
+Runtime is Node/Next with no test framework configured, so I’m auto-bootstrapping the recommended setup (vitest + Testing Library) and will verify it before continuing ship gates.
+____
+I’m implementing the MVP now in a clean, migration-friendly shape: TodoForm, TodoList, TodoItem, localStorage persistence, responsive layout, and empty state, then I’ll run lint/tests and continue /ship.
