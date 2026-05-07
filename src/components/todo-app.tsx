@@ -2,6 +2,7 @@
 
 import TodoForm from "@/components/todo-form";
 import TodoList from "@/components/todo-list";
+import ThemeToggle from "@/components/theme-toggle";
 import { loadTodos, saveTodos } from "@/lib/todo-storage";
 import { Todo, TodoFilter } from "@/types/todo";
 import { useEffect, useMemo, useState } from "react";
@@ -73,11 +74,14 @@ export default function TodoApp() {
   return (
     <div className="min-h-screen bg-zinc-50 px-4 py-8 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
       <main className="mx-auto w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mb-6 space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Todo List</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Keep it simple. Add, complete, and clear your tasks.
-          </p>
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight">Todo List</h1>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Keep it simple. Add, complete, and clear your tasks.
+            </p>
+          </div>
+          <ThemeToggle />
         </div>
 
         <div className="mb-4">
